@@ -1,12 +1,24 @@
 # Final Project for Codecademy CS101 Introduction to Programming
 class Ship():
+    board_size = 10
+
     def __init__(self, length):
         self.length = length
     
-    def place_ship(orientation, row, column):
-        self.orientation = orientation
-        self.row = row
-        self.column = column
+    def place_ship(self, orientation, letter, number):
+        letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+        start_row = letters.index(letter.upper())
+        start_column = number - 1
+        if orientation.upper() == 'H':
+            if start_column + self.length > Ship.board_size:
+                print("No room for the ship here, try a position further away from the edge")
+            else:
+                self.coords = [(start_row, start_column + i) for i in range(self.length)]
+        if orientation.upper() == 'V':
+            if start_row + self.length > Ship.board_size:
+                print("No room for the ship here, try a position further away from the edge")
+            else:
+                self.coords = [(start_row + i, start_column) for i in range(self.length)]
 
 
 class Board():
@@ -14,10 +26,11 @@ class Board():
         self.map = [['|__' for j in range(10)] for i in range(10)]
     
     def __repr__(self):
-        display = '    A  B  C  D  E  F  G  H  I  J \n'
-        row = 1
+        display = '   1  2  3  4  5  6  7  8  9  10\n'
+        row = 0
+        letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
         for i in self.map:
-            row_string = str(row).rjust(2) + ' ' + ''.join(i)
+            row_string = letters[row] + ' ' + ''.join(i)
             display += row_string + '\n'
             row += 1
         return display
