@@ -4,6 +4,7 @@ class Ship():
 
     def __init__(self, length):
         self.length = length
+        self.found = False
     
     def place_ship(self, orientation, letter, number):
         letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
@@ -43,3 +44,23 @@ class Player():
         self.ships = ships
     
 
+# Setup
+p_carrier = Ship(5)
+p_battleship = Ship(4)
+p_cruiser = Ship(3)
+p_submarine = Ship(3)
+p_destroyer = Ship(2)
+c_carrier = Ship(5)
+c_battleship = Ship(4)
+c_cruiser = Ship(3)
+c_submarine = Ship(3)
+c_destroyer = Ship(2)
+
+p_board = Board()
+c_board = Board()
+
+player_name = input('What is your name?')
+player1 = Player(player_name, p_board, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
+computer = Player('Computer', p_board, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
+
+print(player1.board)
