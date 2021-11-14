@@ -6,21 +6,28 @@ class Ship():
         self.length = length
         self.found = False
     
-    def place_ship(self, orientation, letter, number):
+    def place_ship(self, board, orientation, letter, number):
         letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
         start_row = letters.index(letter.upper())
         start_column = number - 1
         if orientation.upper() == 'H':
             if start_column + self.length > Ship.board_size:
-                print("No room for the ship here, try a position further away from the edge")
+                raise ValueError("Too close to edge of board")
             else:
-                self.coords = [(start_row, start_column + i) for i in range(self.length)]
+                required_coords = [(start_row, start_column + i) for i in range(self.length)]
+
         if orientation.upper() == 'V':
             if start_row + self.length > Ship.board_size:
-                print("No room for the ship here, try a position further away from the edge")
+                raise ValueError("Too close to edge of board")
             else:
-                self.coords = [(start_row + i, start_column) for i in range(self.length)]
-
+                required_coords = [(start_row + i, start_column) for i in range(self.length)]
+        
+        for coord in required_coords:
+            if board.map[coord[0]][coord[1]] == '|_*':
+                raise ValueError("Already a ship here")
+        self.coords = required_coords
+        for coord in self.coords:
+            board.map[coord[0]][coord[1]] = '|_*'
 
 class Board():
     def __init__(self):
@@ -38,13 +45,17 @@ class Board():
 
 
 class Player():
-    def __init__(self, name, board, ships):
+    def __init__(self, name, board, guesses, ships):
         self.name = name
         self.board = board
+        self.guesses = guesses
         self.ships = ships
     
+#########
+# Setup #
+#########
 
-# Setup
+# Create ships and boards
 p_carrier = Ship(5)
 p_battleship = Ship(4)
 p_cruiser = Ship(3)
@@ -57,10 +68,17 @@ c_submarine = Ship(3)
 c_destroyer = Ship(2)
 
 p_board = Board()
+p_guesses = Board()
 c_board = Board()
+c_guesses = Board()
 
-player_name = input('What is your name?')
-player1 = Player(player_name, p_board, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
-computer = Player('Computer', p_board, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
+# Create player object for the user
+player_name = input('What is your name? ')
+player1 = Player(player_name, p_board, p_guesses, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
+
+computer = Player('Computer', p_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
 
 print(player1.board)
+p_carrier.place_ship(p_board,'H', 'G', 1)
+print(player1.board)
+p_battleship.place_ship(p_board,'V', 'D', 5)
