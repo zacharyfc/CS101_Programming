@@ -1,4 +1,11 @@
 # Final Project for Codecademy CS101 Introduction to Programming
+# Define custom exceptions
+class OffBoard(Exception):
+    pass
+
+class OccupiedSpace(Exception):
+    pass
+
 class Ship():
     board_size = 10
 
@@ -12,19 +19,19 @@ class Ship():
         start_column = number - 1
         if orientation.upper() == 'H':
             if start_column + self.length > Ship.board_size:
-                raise ValueError("Too close to edge of board")
+                raise OffBoard("Too close to edge of board")
             else:
                 required_coords = [(start_row, start_column + i) for i in range(self.length)]
 
         if orientation.upper() == 'V':
             if start_row + self.length > Ship.board_size:
-                raise ValueError("Too close to edge of board")
+                raise OffBoard("Too close to edge of board")
             else:
                 required_coords = [(start_row + i, start_column) for i in range(self.length)]
         
         for coord in required_coords:
             if board.map[coord[0]][coord[1]] == '|_*':
-                raise ValueError("Already a ship here")
+                raise OccupiedSpace
         self.coords = required_coords
         for coord in self.coords:
             board.map[coord[0]][coord[1]] = '|_*'
@@ -72,11 +79,15 @@ p_guesses = Board()
 c_board = Board()
 c_guesses = Board()
 
-# Create player object for the user
+# Create player objects
 player_name = input('What is your name? ')
 player1 = Player(player_name, p_board, p_guesses, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
 
 computer = Player('Computer', p_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
+
+
+# Place ships on the board
+ship_types = ['carrier', 'battleship', 'cruiser', 'submarine', 'destroyer']
 
 print(player1.board)
 p_carrier.place_ship(p_board,'H', 'G', 1)
