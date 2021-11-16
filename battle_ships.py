@@ -1,8 +1,13 @@
 # Final Project for Codecademy CS101 Introduction to Programming
 import re
+import random
 
+# List of letters to be used for rows
+letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
 # Define functions
 def find_space(ship, board):
+    """Return a list of all vacant positions that a ship can take"""
+    
     potential_positions = []
 
     # Find horizontal space
@@ -48,21 +53,18 @@ class Ship():
         self.length = length
         self.found = False
     
-    def place_ship(self, board, orientation, letter, number):
-        letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
-        start_row = letters.index(letter.upper())
-        start_column = number - 1
+    def place_ship(self, board, orientation, row, column):
         if orientation.upper() == 'H':
-            if start_column + self.length > Ship.board_size:
+            if column + self.length > Ship.board_size:
                 raise OffBoard
             else:
-                required_coords = [(start_row, start_column + i) for i in range(self.length)]
+                required_coords = [(row, column + i) for i in range(self.length)]
 
         if orientation.upper() == 'V':
-            if start_row + self.length > Ship.board_size:
+            if row + self.length > Ship.board_size:
                 raise OffBoard
             else:
-                required_coords = [(start_row + i, start_column) for i in range(self.length)]
+                required_coords = [(row + i, column) for i in range(self.length)]
         
         for coord in required_coords:
             if board.map[coord[0]][coord[1]] == 'X':
@@ -104,7 +106,6 @@ class Board():
     def __repr__(self):
         display = '   1  2  3  4  5  6  7  8  9  10\n'
         row = 0
-        letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
         for i in self.map:
             row_string = letters[row] + ' ' + ''.join(Board.display_dict[j] for j in i)
             display += row_string + '\n'
@@ -159,7 +160,8 @@ for ship in player1.ships:
         
         while True:
             letter = input("Where would you like to place the {}? Enter a row from A-J: ".format(ship.type)).upper()
-            if letter in ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']:
+            if letter in letters:
+                row = letters.index(letter.upper())
                 break
             else:
                 print("That is not a valid row. Letter must be between A and J.")
@@ -168,6 +170,7 @@ for ship in player1.ships:
             try:
                 number = int(input("Where would you like to place the {}? Enter a column from 1-10:".format(ship.type)))
                 if 1 <= number <= 10:
+                    column = number - 1
                     break
                 else:
                     print("That is not a valid column. Number should be between 1 and 10.")
@@ -175,7 +178,7 @@ for ship in player1.ships:
                 print("That is not a valid column. Enter a number.")
 
         try:
-            ship.place_ship(p_board, orientation, letter, number)
+            ship.place_ship(p_board, orientation, row, column)
             break
         except OffBoard:
             print("No room for that ship here, too close to edge of board, choose another location.")
@@ -184,12 +187,9 @@ for ship in player1.ships:
     print(p_board)
 print(p_board)
 
-
-
-
 # Place computer ships on the board
-#for ship in computer.ships:
-    #Find all horizontal positions
-    
-
-#print(potential_positions)
+for ship in computer.ships:
+    empty_spaces = find_space(ship, c_board)
+    chosen_space = random.choice(empty_spaces)
+    print(chosen_space)
+    ship.place_ship(c_board, chosen_space[0], chosen_space[1], chosen_space[2])
