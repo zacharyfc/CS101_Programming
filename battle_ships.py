@@ -1,4 +1,38 @@
 # Final Project for Codecademy CS101 Introduction to Programming
+import re
+
+# Define functions
+def find_space(ship, board):
+    potential_positions = []
+
+    # Find horizontal space
+    row_num = 0
+    column_num = 0
+    
+    for row in board.map:
+        row_current_state = ''.join(row)
+        space_needed = '_' * ship.length
+        columns = [pos.start() for pos in re.finditer('(?={})'.format(space_needed), row_current_state)]
+        for column_num in columns:
+            potential_positions.append(['H', row_num, column_num])
+        row_num += 1
+    
+    # Find vertical space
+    row_num = 0
+    column_num = 0
+
+    trans_board = [list(column) for column in zip(*board.map)]
+    for column in trans_board:
+        column_current_state = ''.join(column)
+        space_needed = '_' * ship.length       
+        rows = [pos.start() for pos in re.finditer('(?={})'.format(space_needed), column_current_state)]
+        
+        for row_num in rows:
+            potential_positions.append(['V', row_num, column_num])
+        column_num += 1
+        
+    return potential_positions
+
 # Define custom exceptions
 class OffBoard(Exception):
     pass
@@ -6,6 +40,7 @@ class OffBoard(Exception):
 class OccupiedSpace(Exception):
     pass
 
+#Define classes
 class Ship():
     board_size = 10
 
@@ -30,11 +65,11 @@ class Ship():
                 required_coords = [(start_row + i, start_column) for i in range(self.length)]
         
         for coord in required_coords:
-            if board.map[coord[0]][coord[1]] == '|_*':
+            if board.map[coord[0]][coord[1]] == 'X':
                 raise OccupiedSpace
         self.coords = required_coords
         for coord in self.coords:
-            board.map[coord[0]][coord[1]] = '|_*'
+            board.map[coord[0]][coord[1]] = 'X'
 
 class Carrier(Ship):
     def __init__(self):
@@ -62,15 +97,16 @@ class Destroyer(Ship):
         self.type = 'destroyer'
 
 class Board():
+    display_dict = {'_':'|__', 'X':'|X_'}
     def __init__(self):
-        self.map = [['|__' for j in range(10)] for i in range(10)]
+        self.map = [['_' for j in range(10)] for i in range(10)]
     
     def __repr__(self):
         display = '   1  2  3  4  5  6  7  8  9  10\n'
         row = 0
         letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
         for i in self.map:
-            row_string = letters[row] + ' ' + ''.join(i)
+            row_string = letters[row] + ' ' + ''.join(Board.display_dict[j] for j in i)
             display += row_string + '\n'
             row += 1
         return display
@@ -110,8 +146,7 @@ player1 = Player(player_name, p_board, p_guesses, [p_carrier, p_battleship, p_cr
 
 computer = Player('Computer', p_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
 
-
-# Place ships on the board
+# Take user input to place player ships on the board
 print(p_board)
 for ship in player1.ships:
     while True:
@@ -148,5 +183,13 @@ for ship in player1.ships:
             print("There is already a ship here, choose another location.")
     print(p_board)
 print(p_board)
- 
 
+
+
+
+# Place computer ships on the board
+#for ship in computer.ships:
+    #Find all horizontal positions
+    
+
+#print(potential_positions)
