@@ -38,6 +38,33 @@ def find_space(ship, board):
         
     return potential_positions
 
+def get_row(question_text):
+    """Take row letter as user input and return index for board map"""
+    while True:
+        letter = input(question_text).upper()
+        if letter in letters:
+            row = letters.index(letter.upper())
+            break
+        else:
+            print("That is not a valid row. Letter must be between A and J.")
+    
+    return row
+
+def get_column(question_text):
+    """Take column number as user input and return index for board map"""
+    while True:
+        try:
+            number = int(input(question_text))
+            if 1 <= number <= 10:
+                column = number - 1
+                break
+            else:
+                print("That is not a valid column. Number should be between 1 and 10.")
+        except ValueError:
+            print("That is not a valid column. Enter a number.")
+    
+    return column
+
 # Define custom exceptions
 class OffBoard(Exception):
     pass
@@ -157,26 +184,10 @@ for ship in player1.ships:
                 break
             else:
                 print("That is not a valid orientation.")
+
+        row = get_row("Where would you like to place the {}? Enter a row from A-J: ".format(ship.type))
+        column = get_column("Where would you like to place the {}? Enter a column from 1-10:".format(ship.type))
         
-        while True:
-            letter = input("Where would you like to place the {}? Enter a row from A-J: ".format(ship.type)).upper()
-            if letter in letters:
-                row = letters.index(letter.upper())
-                break
-            else:
-                print("That is not a valid row. Letter must be between A and J.")
-
-        while True:
-            try:
-                number = int(input("Where would you like to place the {}? Enter a column from 1-10:".format(ship.type)))
-                if 1 <= number <= 10:
-                    column = number - 1
-                    break
-                else:
-                    print("That is not a valid column. Number should be between 1 and 10.")
-            except ValueError:
-                print("That is not a valid column. Enter a number.")
-
         try:
             ship.place_ship(p_board, orientation, row, column)
             break
@@ -193,3 +204,4 @@ for ship in computer.ships:
     chosen_space = random.choice(empty_spaces)
     print(chosen_space)
     ship.place_ship(c_board, chosen_space[0], chosen_space[1], chosen_space[2])
+
