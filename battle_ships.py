@@ -65,6 +65,26 @@ def get_column(question_text):
     
     return column
 
+def player_guess():
+    """Get guess from the user and return it as a map coordinate"""
+    print("Make your guess!")
+    row = get_row("Letter: ")
+    column = get_column("Number: ")
+    return row, column
+
+def check_guess(guess, opponent):
+    """Checks a guess for hits on the opponent's ships and updates
+    ship coords and hits attributes
+    """
+    for ship in opponent.ships:
+        for coord in ship.coords:
+            if guess == coord:
+                print("KABOOM!!!")
+                ship.coords.remove(guess)
+                ship.hits.append(guess)
+                return True
+    return False
+
 # Define custom exceptions
 class OffBoard(Exception):
     pass
@@ -78,6 +98,7 @@ class Ship():
 
     def __init__(self, length):
         self.length = length
+        self.hits = []
         self.found = False
     
     def place_ship(self, board, orientation, row, column):
@@ -204,4 +225,7 @@ for ship in computer.ships:
     chosen_space = random.choice(empty_spaces)
     print(chosen_space)
     ship.place_ship(c_board, chosen_space[0], chosen_space[1], chosen_space[2])
+
+guess = player_guess()
+check_guess(guess, computer)
 
