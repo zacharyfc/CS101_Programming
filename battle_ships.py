@@ -74,7 +74,7 @@ def player_guess():
 
 def check_guess(guess, opponent):
     """Checks a guess for hits on the opponent's ships and updates
-    ship coords and hits attributes
+    ship coords and hits attributes. Returns True if hit made.
     """
     for ship in opponent.ships:
         for coord in ship.coords:
@@ -82,8 +82,42 @@ def check_guess(guess, opponent):
                 print("KABOOM!!!")
                 ship.coords.remove(guess)
                 ship.hits.append(guess)
+
+                if len(ship.coords) == 0:
+                    ship.found = True
+                    print("{} SUNK!!!".format(ship.type).upper())
+                
                 return True
+    print("plop.")
     return False
+
+def record_guess(guess, opponent, board, hit):
+    """Updates players guessing board"""
+    if hit == False:
+        board.map[guess[0]][guess[1]] = '.'
+    elif hit == True:
+        board.map[guess[0]][guess[1]] = 'O'
+    
+    for ship in opponent.ships:
+        if ship.found == True:
+            for coord in ship.hits:
+                board.map[coord[0]][coord[1]] = 'X'
+    print(board)
+
+def check_win(player, opponent):
+    for ship in opponent.ships:
+        if ship.found == False:
+            return False
+    print("{} wins!!".format(player.name))
+    return True
+
+def player_go():
+    guess = player_guess()
+    hit = check_guess(guess, computer)
+    record_guess(guess, computer, p_guesses, hit)
+
+def computer_go():
+    pass
 
 # Define custom exceptions
 class OffBoard(Exception):
@@ -147,7 +181,7 @@ class Destroyer(Ship):
         self.type = 'destroyer'
 
 class Board():
-    display_dict = {'_':'|__', 'X':'|X_'}
+    display_dict = {'_':'|__', 'X':'|X_', '.':'|._', 'O':'|O_'}
     def __init__(self):
         self.map = [['_' for j in range(10)] for i in range(10)]
     
@@ -159,7 +193,6 @@ class Board():
             display += row_string + '\n'
             row += 1
         return display
-
 
 class Player():
     def __init__(self, name, board, guesses, ships):
@@ -193,7 +226,7 @@ c_guesses = Board()
 player_name = input('What is your name? ')
 player1 = Player(player_name, p_board, p_guesses, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
 
-computer = Player('Computer', p_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
+computer = Player('Computer', c_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
 
 # Take user input to place player ships on the board
 print(p_board)
@@ -223,9 +256,12 @@ print(p_board)
 for ship in computer.ships:
     empty_spaces = find_space(ship, c_board)
     chosen_space = random.choice(empty_spaces)
-    print(chosen_space)
     ship.place_ship(c_board, chosen_space[0], chosen_space[1], chosen_space[2])
 
-guess = player_guess()
-check_guess(guess, computer)
-
+while True:
+    player_go()
+    if check_win(player1, computer) == True:
+        break
+    computer_go()
+    if check_win(computer, player1) == True:
+        break
