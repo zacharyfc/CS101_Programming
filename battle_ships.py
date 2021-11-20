@@ -72,6 +72,61 @@ def player_guess():
     column = get_column("Number: ")
     return row, column
 
+def computer_guess():
+    """Use algorithm to return a coordinate"""
+    # Find length of current hits horizontally
+    for row in range(10):
+        try:
+            first_col = c_guesses.map[row].index('O')
+            last_col = 9 - c_guesses.map[row][::-1].index('O')
+            h_length = last_col - first_col + 1
+            break
+        except ValueError:
+            h_length = 0
+    
+    # Find length of current hits vertically
+    trans_c_guesses = [list(column) for column in zip(*c_guesses.map)]
+    for column in range(10):
+        try:
+            first_row = trans_c_guesses[column].index('O')
+            last_row = 9 - trans_c_guesses[column][::-1].index('O')
+            v_length = last_row - first_row + 1
+            break
+        except ValueError:
+            v_length = 0
+    
+    # If no current hits, choose coordinate at random
+    if h_length == 0 and v_length == 0:
+        blanks = []
+        for row in range(10):
+            for column in range(10):
+                if c_guesses.map[row][column] == '_':
+                    blanks.append((row, column))
+        return random.choice(blanks)
+                
+
+    if h_length >= v_length:
+        try:
+            if c_guesses.map[row][last_col + 1] == '_':
+                return row, last_col + 1
+            elif c_guesses.map[row][first_col - 1] == "_":
+                return row, first_col - 1
+            else:
+                pass
+        except IndexError:
+            pass
+    
+    if v_length >= h_length:
+        try:
+            if c_guesses.map[last_row + 1][column] == '_':
+                return last_row + 1, column
+            elif c_guesses.map[first_row - 1][column] == '_':
+                return first_row - 1, column
+            else:
+                pass
+        except IndexError:
+            pass
+
 def check_guess(guess, opponent):
     """Checks a guess for hits on the opponent's ships and updates
     ship coords and hits attributes. Returns True if hit made.
@@ -117,7 +172,10 @@ def player_go():
     record_guess(guess, computer, p_guesses, hit)
 
 def computer_go():
-    pass
+    guess = computer_guess()
+    hit = check_guess(guess, player1)
+    record_guess(guess, player1, c_guesses, hit)
+
 
 # Define custom exceptions
 class OffBoard(Exception):
