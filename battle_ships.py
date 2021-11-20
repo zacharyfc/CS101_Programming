@@ -67,9 +67,14 @@ def get_column(question_text):
 
 def player_guess():
     """Get guess from the user and return it as a map coordinate"""
-    print("Make your guess!")
-    row = get_row("Letter: ")
-    column = get_column("Number: ")
+    while True:
+        print("Make your guess!")
+        row = get_row("Letter: ")
+        column = get_column("Number: ")
+        if p_guesses.map[row][column] != '_':
+            print("You have already bombed this space! Make another choice!")
+        else:
+            break
     return row, column
 
 def computer_guess():
@@ -240,16 +245,18 @@ class Destroyer(Ship):
 
 class Board():
     display_dict = {'_':'|__', 'X':'|X_', '.':'|._', 'O':'|O_'}
-    def __init__(self):
+    def __init__(self, title):
         self.map = [['_' for j in range(10)] for i in range(10)]
+        self.title = title
     
     def __repr__(self):
-        display = '   1  2  3  4  5  6  7  8  9  10\n'
+        display = '\n' + self.title + '\n   1  2  3  4  5  6  7  8  9  10\n'
         row = 0
         for i in self.map:
             row_string = letters[row] + ' ' + ''.join(Board.display_dict[j] for j in i)
             display += row_string + '\n'
             row += 1
+        display += '\n\n\n'
         return display
 
 class Player():
@@ -263,6 +270,8 @@ class Player():
 # Setup #
 #########
 
+player_name = input('What is your name? ')
+
 # Create ships and boards
 p_carrier = Carrier()
 p_battleship = Battleship()
@@ -275,13 +284,12 @@ c_cruiser = Cruiser()
 c_submarine = Submarine()
 c_destroyer = Destroyer()
 
-p_board = Board()
-p_guesses = Board()
-c_board = Board()
-c_guesses = Board()
+p_board = Board("{}'s Ships".format(player_name))
+p_guesses = Board("{}'s Guesses".format(player_name))
+c_board = Board("Computer's Ships")
+c_guesses = Board("Computer's Guesses")
 
 # Create player objects
-player_name = input('What is your name? ')
 player1 = Player(player_name, p_board, p_guesses, [p_carrier, p_battleship, p_cruiser, p_submarine, p_destroyer])
 
 computer = Player('Computer', c_board, c_guesses, [c_carrier, c_battleship, c_cruiser, c_submarine, c_destroyer])
@@ -298,7 +306,7 @@ for ship in player1.ships:
                 print("That is not a valid orientation.")
 
         row = get_row("Where would you like to place the {}? Enter a row from A-J: ".format(ship.type))
-        column = get_column("Where would you like to place the {}? Enter a column from 1-10:".format(ship.type))
+        column = get_column("Where would you like to place the {}? Enter a column from 1-10: ".format(ship.type))
         
         try:
             ship.place_ship(p_board, orientation, row, column)
