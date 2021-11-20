@@ -1,1 +1,0 @@
-# Final Project for Codecademy CS101 Introduction to Programming
