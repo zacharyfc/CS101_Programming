@@ -114,10 +114,12 @@ def computer_guess():
         try:
             if c_guesses.map[row][last_col + 1] == '_':
                 return row, last_col + 1
-            elif c_guesses.map[row][first_col - 1] == "_":
+        except IndexError:
+            pass
+
+        try:
+            if c_guesses.map[row][first_col - 1] == "_":
                 return row, first_col - 1
-            else:
-                pass
         except IndexError:
             pass
     
@@ -125,10 +127,12 @@ def computer_guess():
         try:
             if c_guesses.map[last_row + 1][column] == '_':
                 return last_row + 1, column
-            elif c_guesses.map[first_row - 1][column] == '_':
+        except IndexError:
+            pass
+
+        try:
+            if c_guesses.map[first_row - 1][column] == '_':
                 return first_row - 1, column
-            else:
-                pass
         except IndexError:
             pass
 
